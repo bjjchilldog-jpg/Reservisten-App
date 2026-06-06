@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>RK TacBoard OS</title>
+    <meta name="theme-color" content="#1c201a">
+    
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+
+<div id="strobeScreen" onclick="toggleStrobe()"></div>
+
+<div id="splash-screen">
+    <h1 style="border:none; color:#c4d4a3; font-size:32px;">RK TACBOARD</h1>
+    <div class="eid-text">
+        "Ich schwöre, der Bundesrepublik Deutschland treu zu dienen und das Recht und die Freiheit des deutschen Volkes tapfer zu verteidigen."
+    </div>
+    <div style="margin-top: 30px; width: 40px; height: 4px; background-color: #81613e;"></div>
+</div>
+
+<div class="app-container">
+    <button class="btn-redlight" onclick="toggleRedMode()" id="redModeBtn">🔴 RED MODE</button>
+    <h1>RK TACBOARD OS<span>.</span></h1>
+
+    <div class="header-profile" onclick="switchView('view-profile')">
+        <div>
+            <div id="hdrName" style="color:#c4d4a3; font-weight:bold; font-size:16px;">Bitte Profil anlegen</div>
+            <div id="hdrRK" style="color:#889977; font-size:11px; text-transform:uppercase; margin-top:3px;">Klick hier für Settings</div>
+        </div>
+        <div style="font-size: 24px;">🇩🇪</div>
+    </div>
+
+    <div id="view-menu" class="view active">
+        <div class="menu-grid">
+            <button class="btn btn-olive" onclick="switchView('view-opord')"><span class="icon">📋</span><span>5-PUNKTE-BEFEHL</span></button>
+            <button class="btn btn-olive" onclick="switchView('view-rdl')"><span class="icon">💶</span><span>RDL TRACKER</span></button>
+            
+            <button class="btn btn-coyote" onclick="switchView('view-readiness')"><span class="icon">🛡️</span><span>IGF & ADMIN</span></button>
+            <button class="btn btn-coyote" onclick="switchView('view-stan')"><span class="icon">🎒</span><span>STAN-CHECK</span></button>
+            
+            <button class="btn btn-dark" onclick="switchView('view-marsch')"><span class="icon">🧭</span><span>MARSCH & PACE</span></button>
+            
+            <button class="btn btn-coyote" style="background:#5e6c3a;" onclick="switchView('view-prep')"><span class="icon">🏋️‍♂️</span><span>KLF & IGF PREP</span></button>
+            
+            <button class="btn btn-dark" onclick="switchView('view-log')"><span class="icon">🎯</span><span>SCHIESSBUCH</span></button>
+            <button class="btn btn-dark" onclick="switchView('view-radar')"><span class="icon">🕸️</span><span>SKILL RADAR</span></button>
+            
+            <button class="btn btn-dark" onclick="switchView('view-training')"><span class="icon">📓</span><span>TAGEBUCH</span></button>
+            <button class="btn btn-dark" onclick="switchView('view-seminare')"><span class="icon">🏛️</span><span>AUSBILDUNG</span></button>
+            
+            <button class="btn btn-red menu-full" onclick="switchView('view-scenarios')"><span class="icon">⚡</span><span>SZENARIEN</span></button>
+
+            <button class="btn btn-dark" onclick="switchView('view-reference')"><span class="icon">📖</span><span>TASCHENKARTEN</span></button>
+            <button class="btn btn-dark" onclick="switchView('view-contacts')"><span class="icon">📞</span><span>KONTAKTE</span></button>
+            
+            <button class="btn btn-dark menu-full" style="background:#1a2214; border-color:#4b5320;" onclick="switchView('view-data')"><span class="icon">💾</span><span>DATENSICHERUNG (EXPORT)</span></button>
+            <button class="btn btn-red menu-full" onclick="switchView('view-tccc')"><span class="icon">🚨</span><span>NOTFALL / TCCC</span></button>
+        </div>
+        <div style="text-align: center; margin-top: 20px; font-size: 10px; color: #555;">Digi-Taschenkarte | OFFLINE READY | MAD READY</div>
+    </div>
+
+    <div id="view-prep" class="view">
+        <h2>KLF & IGF PREP PLANER</h2>
+        <p style="font-size:11px; color:#889977; text-align:center;">Ernährungs- & Trainingssteuerung für den Tag der Abnahme</p>
+        
+        <div class="card" style="border-left-color: #a1b082; padding-bottom:20px;">
+            <label id="campDaysLabel">Tage bis zum Stichtag (z.B. IGF-Abnahme/Marsch):</label>
+            <input type="number" id="prepDays" placeholder="z.B. 42">
+            <div style="display:flex; gap:10px;">
+                <div style="flex:1;"><label>Aktuell (kg)</label><input type="number" id="prepCurWt" step="0.1"></div>
+                <div style="flex:1;"><label>Ziel (kg)</label><input type="number" id="prepTarWt" step="0.1" placeholder="Optional"></div>
+            </div>
+            <label>Ernährungstyp:</label>
+            <select id="prepDietType"><option value="omnivor" selected>Mischkost (Omnivor)</option><option value="vegetarisch">Vegetarisch</option><option value="vegan">Vegan</option></select>
+            <label>Alltags-Pensum (Beruf):</label>
+            <select id="prepFreq"><option value="1.2">Sitzend (Büro)</option><option value="1.55" selected>Moderat (Bewegung)</option><option value="1.75">Körperlich schwer</option></select>
+            <button class="btn btn-olive" style="margin-top:20px;" onclick="calculatePrep()">BERECHNEN</button>
+        </div>
+        
+        <div id="prepResultBox" style="display:none; margin-top:20px;">
+            <div class="camp-alert" id="prepAlertBox"></div>
+            <div class="card" style="border-left-color: #81613e;">
+                <h3 style="margin-top:5px;">📊 NÄHRSTOFFE (GRAMM/TAG)</h3>
+                <div class="camp-stat-row"><span>TDEE (Verbrauch):</span><span class="camp-stat-val" id="prepTDEE"></span></div>
+                <div class="camp-stat-row"><span>Ziel-Kalorien:</span><span class="camp-stat-val" id="prepTargetKcal"></span></div>
+                <div class="camp-stat-row" style="margin-top:10px;"><span>🥩 Proteine (Erhalt):</span><span class="camp-stat-val" style="color:#c4d4a3;" id="prepProtein"></span></div>
+                <div class="camp-stat-row"><span>🥑 Fette (Hormone):</span><span class="camp-stat-val" style="color:#c4d4a3;" id="prepFat"></span></div>
+                <div class="camp-stat-row"><span>🍚 Carbs (Leistung):</span><span class="camp-stat-val" style="color:#c4d4a3;" id="prepCarbs"></span></div>
+            </div>
+            
+            <div class="card" style="border-left-color: #4b5320;">
+                <h3 style="margin-top:5px;">🏋️‍♂️ PERIODISIERUNG ZUM STICHTAG</h3>
+                <div id="prepPhases"></div>
+            </div>
+            
+            <button class="btn btn-coyote" style="margin-top:20px;" onclick="generatePrepPlan()"><span class="icon">📅</span> TRAININGSPLAN GENERIEREN</button>
+            <div id="prepPlanBox" style="margin-top:15px; display:none;"></div>
+        </div>
+        <button class="btn btn-dark" style="margin-top:20px;" onclick="switchView('view-menu')">ZURÜCK</button>
+    </div>
+
+    <div id="view-scenarios" class="view">
+        <h2>ÜBUNGSSZENARIEN & DRILLS</h2>
+        <p style="font-size:11px; color:#889977; text-align:center;">Mentales Training für kritische Lagen</p>
+        
+        <div id="scenHome">
+            <div id="scenarioList"></div>
+            
+            <div class="card" style="border-left-color: #81613e; margin-top: 30px;">
+                <h3 style="margin-top:0;">SZENARIO IMPORT (JSON)</h3>
+                <p style="font-size:11px; color:#ccc;">Lade eigene Drills als JSON-Datei hoch.</p>
+                <input type="file" id="importScenInput" accept=".json" style="display:none" onchange="importCustomScenario(event)">
+                <button class="btn btn-dark" onclick="document.getElementById('importScenInput').click()"><span class="icon">📂</span> IMPORTIEREN</button>
+            </div>
+        </div>
+        
+        <div id="scenarioActive" style="display:none;">
+            <div class="card" style="border-left-color: #c0392b;">
+                <h3 id="scenTitle" style="color:#c4d4a3; margin-top: 0; border-bottom: 1px solid #3a4035; padding-bottom: 10px;"></h3>
+                <div id="scenText" style="font-size: 14px; margin-bottom: 20px; line-height: 1.5;"></div>
+                
+                <div id="scenOptions" style="display:flex; flex-direction:column; gap:10px;"></div>
+                
+                <div id="scenFeedback" class="step-red" style="display:none; margin-top: 20px; border-width: 4px;"></div>
+            </div>
+            <button class="btn btn-dark" style="margin-top:20px;" onclick="closeScenario()">SZENARIO ABBRECHEN</button>
+        </div>
+        
+        <button class="btn btn-dark" id="btnScenBack" style="margin-top:20px;" onclick="switchView('view-menu')">ZURÜCK</button>
+    </div>
+
+    <div id="view-profile" class="view">
+        <h2>PROFIL & ECKDATEN</h2>
+        <div class="card">
+            <label>Dienstgrad:</label>
+            <select id="profRank">
+                <option value="Jg/Schütze/Flgr">Jg/Schütze/Flgr</option><option value="Gefreiter">Gefreiter</option><option value="Obergefreiter">Obergefreiter</option><option value="Hauptgefreiter">Hauptgefreiter</option><option value="Stabsgefreiter">Stabsgefreiter</option><option value="Oberstabsgefreiter">Oberstabsgefreiter</option><option value="Korporal">Korporal</option><option value="Unteroffizier">Unteroffizier</option><option value="Stabsunteroffizier">Stabsunteroffizier</option><option value="Feldwebel">Feldwebel</option><option value="Oberfeldwebel">Oberfeldwebel</option><option value="Hauptfeldwebel">Hauptfeldwebel</option><option value="Stabsfeldwebel">Stabsfeldwebel</option><option value="Oberstabsfeldwebel">Oberstabsfeldwebel</option><option value="Leutnant">Leutnant</option><option value="Oberleutnant">Oberleutnant</option><option value="Hauptmann">Hauptmann</option><option value="Major">Major</option><option value="Oberstleutnant">Oberstleutnant</option><option value="Oberst">Oberst</option>
+            </select>
+            <label>Nachname, Vorname:</label><input type="text" id="profName" placeholder="z.B. Kremmel, Martin">
+            <label>Personenkennziffer (PK):</label><input type="text" id="profPK" placeholder="z.B. 120580-M-21214">
+            <div style="font-size:11px; color:#889977; margin-top:4px; margin-bottom:10px;">Wird nur lokal gespeichert.</div>
+            <label>Reservistenkameradschaft (RK):</label><input type="text" id="profRK" placeholder="z.B. RK Neumarkt">
+            <label>Heimatadresse (für Notfälle/Meldungen):</label><textarea id="profAddress" placeholder="Straße, PLZ, Ort"></textarea>
+            <button class="btn btn-olive" style="margin-top:20px;" onclick="saveProfile()">PROFIL SPEICHERN</button>
+        </div>
+        <button class="btn btn-dark" onclick="switchView('view-menu')">ZURÜCK</button>
+    </div>
+
+    <div id="view-opord" class="view">
+        <h2>5-PUNKTE-BEFEHL (OPORD)</h2>
+        <p style="font-size:11px; color:#889977; text-align:center;">Schema zur strukturierten Befehlsausgabe an die Gruppe.</p>
+        <div class="card">
+            <label>1. Lage</label><textarea id="opord1" placeholder="Feindlage, Eigene Lage, Unterstellungen/Abgaben"></textarea>
+            <label>2. Auftrag</label><textarea id="opord2" placeholder="Wer, Wann, Wo, Wie, Wozu?"></textarea>
+            <label>3. Durchführung</label><textarea id="opord3" placeholder="Eigene Absicht, Aufträge an unterstellte Kräfte"></textarea>
+            <label>4. Einsatzunterstützung</label><textarea id="opord4" placeholder="Munition, Sanität, Verpflegung"></textarea>
+            <label>5. Führungsunterstützung</label><textarea id="opord5" placeholder="Funkfrequenzen, Passwörter, Platz des Führers"></textarea>
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button class="btn btn-olive" style="flex:1;" onclick="saveOpord()">SPEICHERN</button>
+                <button class="btn btn-dark" style="flex:1;" onclick="copyOpord()"><span class="icon">📋</span> KOPIEREN</button>
+            </div>
+        </div>
+        <button class="btn btn-dark" style="margin-top:20px;" onclick="switchView('view-menu')">ZURÜCK</button>
+    </div>
+
+    <div id="view-rdl" class="view">
+        <h2>RDL & PRÄMIEN TRACKER</h2>
+        <p style="font-size:11px; color:#889977; text-align:center;">Übersicht deiner Diensttage im aktuellen Kalenderjahr.</p>
+        <div class="card" style="text-align: center;">
+            <h3 style="margin-top:0;">GESAMT: <span id="rdlTotalDays" style="font-size:24px; color:#a1b082;">0</span> TAGE</h3>
+            <div class="rdl-bar-bg">
+                <div class="rdl-marker" style="left: 45.45%;"></div> <div class="rdl-marker" style="left: 75.75%;"></div> <div class="rdl-bar-fill" id="rdlProgressBar"></div>
+            </div>
+            <div style="display:flex; justify-content: space-between; font-size:10px; color:#889977; margin-top:5px;">
+                <span>0</span><span>Stufe 1 (15)</span><span>Stufe 2 (25)</span><span>Stufe 3 (33)</span>
+            </div>
+            <p id="rdlStatusText" style="font-size:12px; color:#c4d4a3; margin-top:15px; font-weight:bold;"></p>
+        </div>
+
+        <div class="card">
+            <h3 style="margin-top:0;">NEUEN DIENST EINTRAGEN</h3>
+            <label>Art (z.B. DVag, TrÜbPl, SiPo):</label><input type="text" id="rdlName">
+            <div style="display:flex; gap:10px;">
+                <div style="flex:2;"><label>Datum:</label><div class="admin-date-row"><input type="date" id="rdlDate"></div></div>
+                <div style="flex:1;"><label>Tage:</label><input type="number" id="rdlDays" value="1" min="1"></div>
+            </div>
+            <button class="btn btn-olive" style="margin-top:15px;" onclick="addRdl()">HINZUFÜGEN</button>
+        </div>
+        <h3 style="margin-top:20px;">HISTORIE</h3><div id="rdlList"></div>
+        <button class="btn btn-dark" style="margin-top:20px;" onclick="switchView('view-menu')">ZURÜCK</button>
+    </div>
+
+    <div id="view-readiness" class="view">
+        <h2>READINESS STATUS</h2>
+        <div class="card">
+            <h3 style="margin-top:0;">IGF / KLF (Laufendes Jahr)</h3>
+            <div class="igf-row"><span>BFT</span><div style="display:flex; gap:10px;"><select id="igf_bft" onchange="saveIGF()"><option value="no">Offen</option><option value="yes">Erledigt</option></select><div class="status-dot status-red" id="dot_bft"></div></div></div>
+            <div class="igf-row"><span>Schießen</span><div style="display:flex; gap:10px;"><select id="igf_shoot" onchange="saveIGF()"><option value="no">Offen</option><option value="yes">Erledigt</option></select><div class="status-dot status-red" id="dot_shoot"></div></div></div>
+            <div class="igf-row"><span>Marsch</span><div style="display:flex; gap:10px;"><select id="igf_marsch" onchange="saveIGF()"><option value="no">Offen</option><option value="yes">Erledigt</option></select><div class="status-dot status-red" id="dot_marsch"></div></div></div>
+            <div class="igf-row"><span>ABC-Schutz</span><div style="display:flex; gap:10px;"><select id="igf_abc" onchange="saveIGF()"><option value="no">Offen</option><option value="yes">Erledigt</option></select><div class="status-dot status-red" id="dot_abc"></div></div></div>
+            <div class="igf-row"><span>Sanitätsausb.</span><div style="display:flex; gap:10px;"><select id="igf_san" onchange="saveIGF()"><option value="no">Offen</option><option value="yes">Erledigt</option></select><div class="status-dot status-red" id="dot_san"></div></div></div>
+        </div>
+
+        <div class="card">
+            <h3 style="margin-top:0;">ADMINISTRATIVES (FRISTEN)</h3>
+            <label>Impfstatus (9000er):</label>
+            <div class="admin-date-row"><input type="date" id="admin_impf" onchange="saveIGF()"><button class="btn-sm-cal" onclick="exportToCalendar('Ablauf Impfstatus', document.getElementById('admin_impf').value)">📅</button></div>
+            <label>Sicherheitsüberprüfung (SÜ):</label>
+            <div class="admin-date-row"><input type="date" id="admin_sue" onchange="saveIGF()"><button class="btn-sm-cal" onclick="exportToCalendar('Ablauf SÜ', document.getElementById('admin_sue').value)">📅</button></div>
+            <label>90/5 Wehrdienstfähigkeit:</label>
+            <div class="admin-date-row"><input type="date" id="admin_905" onchange="saveIGF()"><button class="btn-sm-cal" onclick="exportToCalendar('Ablauf 90/5', document.getElementById('admin_905').value)">📅</button></div>
+            <label>Einsatzersthelfer A (EEH-A):</label>
+            <div class="admin-date-row"><input type="date" id="admin_eeha" onchange="saveIGF()"><button class="btn-sm-cal" onclick="exportToCalendar('Ablauf EEH-A', document.getElementById('admin_eeha').value)">📅</button></div>
+            <label>Bw-Führerschein:</label>
+            <div class="admin-date-row"><input type="date" id="admin_bwfs" onchange="saveIGF()"><button class="btn-sm-cal" onclick="exportToCalendar('Ablauf Bw-FS', document.getElementById('admin_bwfs').value)">📅</button></div>
+            <label>Ende Beorderung:</label>
+            <div class="admin-date-row"><input type="date" id="admin_beord" onchange="saveIGF()"><button class="btn-sm-cal" onclick="exportToCalendar('Ende Beorderung', document.getElementById('admin_beord').value)">📅</button></div>
+        </div>
+
+        <div class="card">
+            <h3 style="margin-top:0;">WEITERE FRISTEN</h3>
+            <div id="customDeadlinesContainer"></div>
+            <div style="display:flex; gap:10px; margin-top:15px; align-items: flex-end;">
+                <div style="flex:2;"><input type="text" id="customDeadlineName" placeholder="Titel (z.B. G26.3)"></div>
+                <div style="flex:2;"><div class="admin-date-row"><input type="date" id="customDeadlineDate"></div></div>
+                <div style="flex:1;"><button class="btn btn-olive" style="margin:0; padding:12px; height: 100%" onclick="addCustomDeadline()">+</button></div>
+            </div>
+        </div>
+        <button class="btn btn-dark" onclick="switchView('view-menu')">ZURÜCK</button>
+    </div>
+
+    <div id="view-stan" class="view">
+        <h2>STAN-CHECK</h2>
+        <div style="display:flex; gap:10px; margin-bottom:20px;">
+            <input type="text" id="profileNameInput" placeholder="Neue Packliste (z.B. Daypack)">
+            <button class="btn btn-olive" style="padding:10px; width:auto; margin:0;" onclick="addProfile()">+</button>
+        </div>
+        <div id="profilesContainer"></div>
+        <button class="btn btn-dark" style="margin-top:20px;" onclick="switchView('view-menu')">ZURÜCK</button>
+    </div>
+
+    <div id="view-marsch" class="view">
+        <h2>MARSCH-RECHNER & PACER</h2>
+        <div class="card" style="border-left-color: #27ae60; text-align: center;">
+            <h3 style="margin-top:0; color:#27ae60;">PACE-COUNTER (NACHTMARSCH)</h3>
+            <p style="font-size:11px; color:#ccc;">Ersatz für Ranger-Perlenschnur. Bei Erreichen der 100m-Schrittzahl tippen.</p>
+            <div style="font-size:55px; font-weight:bold; color:#27ae60; margin:15px 0; font-family:monospace;" id="paceDisplay">0 m</div>
+            <div style="display:flex; gap:10px;">
+                <button class="btn" style="flex:3; background-color:#27ae60; color:#fff; font-size:24px; padding:25px;" onclick="addPace()">+ 100m</button>
+                <button class="btn btn-dark" style="flex:1;" onclick="resetPace()">RESET</button>
+            </div>
+        </div>
+        <div class="card">
+            <h3 style="margin-top:0;">MARSCH-RECHNER</h3>
+            <div style="display:flex; gap:10px;">
+                <div style="flex:1;"><label>Distanz (km)</label><input type="number" id="m-dist" value="12" step="0.5"></div>
+                <div style="flex:1;"><label>Gepäck (kg)</label><input type="number" id="m-weight" value="15"></div>
+            </div>
+            <label>Marschtempo (Vorgabe):</label>
+            <select id="m-pace">
+                <option value="12">Gefechtsmarsch (12 min/km)</option>
+                <option value="10" selected>Leistungsmarsch (10 min/km)</option>
+                <option value="8.5">Eilmarsch (8.5 min/km)</option>
+            </select>
+            <button class="btn btn-coyote" style="margin-top:15px;" onclick="calcMarsch()">BERECHNEN</button>
+            <div id="marschResult" style="display:none; text-align:center;">
+                <div style="font-size:24px; font-weight:bold; color:#a1b082; margin-top:15px;" id="m-targetTime">02:00:00</div>
+                <button class="btn btn-olive" style="margin-top:10px;" onclick="transferToTimer()">IN TIMER ÜBERNEHMEN</button>
+            </div>
+        </div>
+        <h3 style="margin-top:20px;">MARSCH-TIMER</h3>
+        <div style="display:flex; gap:10px;">
+            <div style="flex:1;"><label>Stunden</label><input type="number" id="t-hours" value="2" min="0"></div>
+            <div style="flex:1;"><label>Minuten</label><input type="number" id="t-mins" value="0" min="0" max="59"></div>
+        </div>
+        <div class="timer-display" id="timerDisplay">02:00:00</div>
+        <button class="btn btn-olive" id="btnTimerStart" onclick="startTimer()">MARSCH STARTEN</button>
+        <button class="btn btn-red" id="btnTimerStop" style="display:none;" onclick="stopTimer()">MARSCH ABBRECHEN</button>
+        <button class="btn btn-dark" style="margin-top:20px;" onclick="switchView('view-menu')">ZURÜCK</button>
+    </div>
+
+    <div id="view-log" class="view">
+        <h2>SCHIESSBUCH / WAKAS</h2>
+        <div class="card">
+            <label>Waffe:</label>
+            <select id="logWeaponSelect" onchange="checkCustomWeapon()">
+                <option value="G36">G36 (Sturmgewehr)</option><option value="G95A1">G95A1 (Sturmgewehr)</option><option value="P8">P8 (Pistole)</option><option value="P12">P12 (Pistole)</option><option value="MP7">MP7 (MPi)</option><option value="MG3">MG3</option><option value="MG4">MG4</option><option value="MG5">MG5</option><option value="G22/28/82">Scharfschützengewehr</option><option value="Panzerfaust 3">Panzerfaust 3</option><option value="RGW 90">RGW 90</option><option value="Handgranate">Handgranaten (DM51)</option><option value="Sonstige">Sonstige...</option>
+            </select>
+            <input type="text" id="logWeaponCustom" placeholder="Bezeichnung..." style="display:none;">
+            <label>Übung:</label><input type="text" id="logDrill" placeholder="z.B. G36-S-9">
+            <label>Notizen / Trefferbild:</label><textarea id="logText" placeholder="z.B. 14/15 Treffer. Leicht tief links."></textarea>
+            <label>Foto der Scheibe:</label>
+            <input type="file" id="logPhotoInput" accept="image/*" capture="environment" style="display:none" onchange="previewPhoto(event)">
+            <button class="btn btn-dark" style="margin-top:5px; padding:12px;" onclick="document.getElementById('logPhotoInput').click()"><span class="icon">📸</span> FOTO HINZUFÜGEN</button>
+            <img id="logPhotoPreview" style="display:none; width:100%; border-radius:4px; margin-top:10px; border:1px solid #3a4035;">
+            <button class="btn btn-olive" style="margin-top:20px;" onclick="saveLog()">LOG SPEICHERN</button>
+        </div>
+        <h3 style="margin-top:20px;">HISTORIE</h3><div id="logList"></div>
+        <button class="btn btn-dark" style="margin-top:20px;" onclick="switchView('view-menu')">ZURÜCK</button>
+    </div>
+
+    <div id="view-radar" class="view">
+        <h2>TAKTISCHES PROFIL</h2>
+        <canvas id="radarCanvas" width="300" height="300"></canvas>
+        <div class="dash-box">
+            <div class="dash-label">COMBAT READINESS SCORE</div>
+            <div class="dash-val" id="radarOverallScore">0/100</div>
+        </div>
+        <div class="card"><h3 style="margin-top:0;">🛠️ ANALYSE</h3><div id="radarFeedback" style="font-size:13px; color:#ccc;">Lade Profile...</div></div>
+        <button class="btn btn-olive" style="margin-top:20px;" onclick="document.getElementById('radarSliders').style.display='block'">SKILLS BEWERTEN</button>
+        <div id="radarSliders" class="radar-slider-box">
+            <div class="slider-label"><span>Waffendrill / Handling</span><span id="val_waf">5</span></div><input type="range" id="sl_waf" min="1" max="10" value="5" oninput="updateRadarSl('waf')">
+            <div class="slider-label"><span>San / TCCC</span><span id="val_san">5</span></div><input type="range" id="sl_san" min="1" max="10" value="5" oninput="updateRadarSl('san')">
+            <div class="slider-label"><span>Taktik / Führung</span><span id="val_tak">5</span></div><input type="range" id="sl_tak" min="1" max="10" value="5" oninput="updateRadarSl('tak')">
+            <div class="slider-label"><span>Orientierung (Karte)</span><span id="val_ori">5</span></div><input type="range" id="sl_ori" min="1" max="10" value="5" oninput="updateRadarSl('ori')">
+            <div class="slider-label"><span>Physis (Kondition)</span><span id="val_phy">5</span></div><input type="range" id="sl_phy" min="1" max="10" value="5" oninput="updateRadarSl('phy')">
+            <button class="btn btn-coyote" style="margin-top:15px;" onclick="saveRadar()">SPEICHERN</button>
+        </div>
+        <button class="btn btn-dark" style="margin-top:20px;" onclick="switchView('view-menu')">ZURÜCK</button>
+    </div>
+
+    <div id="view-training" class="view">
+        <h2>ÜBUNGSTAGEBUCH</h2>
+        <div class="card">
+            <button class="btn-sm-olive" onclick="suggestFromRadar()"><span class="icon">🎯</span> FOKUS AUS RADAR LADEN</button>
+            <label style="margin-top:15px;">Ziel / Trainingsfokus:</label><input type="text" id="trainFokus" placeholder="z.B. Marsch 10km, 15kg">
+            <div style="display:flex; gap:10px;">
+                <div style="flex:1;">
+                    <label>Datum:</label>
+                    <div class="admin-date-row"><input type="date" id="trainDate"><button class="btn-sm-cal" onclick="exportToCalendar('Training: ' + (document.getElementById('trainFokus').value || 'RK'), document.getElementById('trainDate').value)">📅</button></div>
+                </div>
+                <div style="flex:1;"><label>Erfolg?</label><select id="trainSuccess"><option value="Ja">✅ Ja</option><option value="Mittel">⚠️ Mittel</option><option value="Nein">❌ Nein</option></select></div>
+            </div>
+            <label>Notizen / Learnings:</label><textarea id="trainNotes" placeholder="Was lief gut?"></textarea>
+            <button class="btn btn-olive" style="margin-top:15px;" onclick="saveTraining()">EINTRAG SPEICHERN</button>
+        </div>
+        <h3 style="margin-top:20px;">HISTORIE</h3><div id="trainList"></div>
+        <button class="btn btn-dark" style="margin-top:20px;" onclick="switchView('view-menu')">ZURÜCK</button>
+    </div>
+
+    <div id="view-seminare" class="view">
+        <h2>AUSBILDUNG / POLBIL</h2>
+        <div class="card">
+            <label>Thema / Lehrgang:</label><input type="text" id="semName" placeholder="z.B. PolBil: Cyber">
+            <div style="display:flex; gap:10px;">
+                <div style="flex:1;">
+                    <label>Datum:</label>
+                    <div class="admin-date-row">
+                        <input type="date" id="semDate">
+                        <button class="btn-sm-cal" onclick="exportToCalendar('Seminar: ' + (document.getElementById('semName').value || 'PolBil'), document.getElementById('semDate').value)">📅</button>
+                    </div>
+                </div>
+                <div style="flex:1;"><label>Veranstalter:</label><input type="text" id="semOrg" placeholder="z.B. VdRBw"></div>
+            </div>
+            <button class="btn btn-olive" style="margin-top:15px;" onclick="saveSeminar()">EINTRAGEN</button>
+        </div>
+        <h3 style="margin-top:20px;">ABSOLVIERT</h3><div id="semList"></div>
+        <button class="btn btn-dark" style="margin-top:20px;" onclick="switchView('view-menu')">ZURÜCK</button>
+    </div>
+
+    <div id="view-afu" class="view">
+        <h2>NACHWUCHS & AfU</h2>
+        <div class="card">
+            <h3 style="margin-top:0;">GÄSTE EINLADEN (WhatsApp)</h3>
+            <label>Veranstaltung:</label><input type="text" id="invEvent" placeholder="z.B. Marschtraining">
+            <label>Datum:</label><div class="admin-date-row"><input type="date" id="invDate"><button class="btn-sm-cal" onclick="exportToCalendar('Einladung: ' + (document.getElementById('invEvent').value || 'RK Veranstaltung'), document.getElementById('invDate').value)">📅</button></div>
+            <label>Treffpunkt:</label><input type="text" id="invLoc" placeholder="z.B. Musterhausen">
+            <button class="btn btn-olive" style="margin-top:15px;" onclick="shareInvite()"><span class="icon">💬</span> VIA WHATSAPP SENDEN</button>
+        </div>
+        <div class="card">
+            <h3 style="margin-top:0;">INFO: AUSBILDUNG UNGEDIENTE</h3>
+            <div class="ref-card"><strong>1. Beratung:</strong> Termin beim Karrierecenter.</div>
+            <div class="ref-card"><strong>2. Musterung (90/5):</strong> Ärztliche Untersuchung.</div>
+            <div class="ref-card"><strong>3. MAD:</strong> Sicherheitsüberprüfung (Ü1).</div>
+            <div class="ref-card"><strong>4. Zuziehung:</strong> Einkleidung beim LHBw.</div>
+            <div class="ref-card"><strong>5. Basis-Modul:</strong> 2-4 Wochen Kompaktausbildung.</div>
+        </div>
+        <button class="btn btn-dark" onclick="switchView('view-menu')">ZURÜCK</button>
+    </div>
+
+    <div id="view-reference" class="view">
+        <h2>TASCHENKARTEN & AKÜFI</h2>
+        <div class="card">
+            <h3 style="margin-top:0;">WAFFEN-DRILLS (STÖRUNGEN)</h3>
+            <div class="ref-card"><strong>Störungsbeseitigung Teil 1 (Sofortaktion)</strong><br>1. Waffe ankippen (Auswurf prüfen)<br>2. Schlag auf Magazinboden (Tap)<br>3. Spannschieber voll zurück & loslassen (Rack)<br>4. Weiterkämpfen (Bang)</div>
+            <div class="ref-card"><strong>Störungsbeseitigung Teil 2 (Wenn Teil 1 versagt)</strong><br>1. Magazin entnehmen<br>2. Spannschieber mehrfach ziehen (Kammer leeren)<br>3. Neues Magazin einführen<br>4. Durchladen & Weiterkämpfen</div>
+        </div>
+        <div class="card">
+            <h3 style="margin-top:0;">WAFFENFARBEN / LITZEN</h3>
+            <div class="ref-card">
+                <span style="color:#27ae60; font-weight:bold;">Grün:</span> Infanterie (Jäger, Gebirgs-, Fallschirmjgr)<br><span style="color:#c0392b; font-weight:bold;">Rot:</span> Artillerie, Heeresflugabwehr<br><span style="color:#f1c40f; font-weight:bold;">Goldgelb:</span> Aufklärer<br><span style="color:#e84393; font-weight:bold;">Rosa:</span> Panzertruppe<br><span style="color:#f39c12; font-weight:bold;">Zitronengelb:</span> Fernmelder<br><span style="color:#2980b9; font-weight:bold;">Dunkelblau:</span> Sanitätstruppe<br><span style="color:#000000; font-weight:bold;">Schwarz:</span> Pioniere<br><span style="color:#e67e22; font-weight:bold;">Orange:</span> Feldjäger
+            </div>
+        </div>
+        <div class="card" style="border-left-color: #c0392b;">
+            <h3 style="margin-top:0; color:#c0392b;">SÜG & VERFASSUNGSTREUE</h3>
+            <div class="ref-card"><strong>1. Verfassungstreue:</strong> Bekenntnis zur FDGO zwingend.</div>
+            <div class="ref-card"><strong>2. Extremismus:</strong> Keine Unterstützung verfassungsfeindlicher Organisationen.</div>
+            <div class="ref-card"><strong>3. Kriminalität:</strong> Ausschluss bei schweren Straftaten oder Erpressbarkeit (Schulden).</div>
+        </div>
+        <div class="card">
+            <h3 style="margin-top:0;">MELDUNGEN & ABC</h3>
+            <div class="ref-card"><strong>SALUTE:</strong> Size, Activity, Location, Unit, Time, Equip.</div>
+            <div class="ref-card"><strong>UXO:</strong> Melden, Warnen, Sichern, Nichts anfassen!</div>
+            <div class="ref-card"><strong>MOPP-Level:</strong> 0 (Griffbereit), 1 (Anzug), 2 (Anzug+Schuhe), 3 (+Maske), 4 (Vollschutz inkl. Handschuhe).</div>
+        </div>
+        <div class="card">
+            <h3 style="margin-top:0;">NATO ALPHABET</h3>
+            <div style="column-count: 2; font-size: 13px; color: #ccc;">A - Alpha<br>B - Bravo<br>C - Charlie<br>D - Delta<br>E - Echo<br>F - Foxtrot<br>G - Golf<br>H - Hotel<br>I - India<br>J - Juliett<br>K - Kilo<br>L - Lima<br>M - Mike<br>N - November<br>O - Oscar<br>P - Papa<br>Q - Quebec<br>R - Romeo<br>S - Sierra<br>T - Tango<br>U - Uniform<br>V - Victor<br>W - Whiskey<br>X - X-ray<br>Y - Yankee<br>Z - Zulu</div>
+        </div>
+        <div class="card">
+            <h3 style="margin-top:0;">AKÜFI (Wörterbuch)</h3>
+            <div class="ref-card"><strong>DVag:</strong> Dienstliche Veranstaltung<br><strong>VVag:</strong> Verbandsveranstaltung (zivil)<br><strong>RDL:</strong> Reservistendienstleistung (Übung)<br><strong>STAN:</strong> Stärke- und Ausrüstungsnachweis<br><strong>SÜ:</strong> Sicherheitsüberprüfung<br><strong>MAD:</strong> Militärischer Abschirmdienst<br><strong>IGF:</strong> Indiv. Grundfertigkeiten<br><strong>KLF:</strong> Körperl. Leistungsfähigkeit<br><strong>BFT:</strong> Basis-Fitness-Test<br><strong>AGSHP:</strong> Schießsimulator<br><strong>ZDv:</strong> Zentrale Dienstvorschrift</div>
+        </div>
+        <button class="btn btn-dark" onclick="switchView('view-menu')">ZURÜCK</button>
+    </div>
+
+    <div id="view-contacts" class="view">
+        <h2>DIENSTLICHE KONTAKTE</h2>
+        <div class="card"><strong>Militärischer Abschirmdienst (MAD)</strong><div style="font-size:12px; color:#ccc; margin-bottom:8px;">Extremismus, Sabotage, Spionage.</div><a href="tel:+4922193710" class="btn btn-dark"><span class="icon">🛡️</span> MAD ANRUFEN</a></div>
+        <div class="card"><strong>Feldjäger (Militärpolizei)</strong><div style="font-size:12px; color:#ccc; margin-bottom:8px;">Notruf bei Zwischenfällen.</div><a href="tel:110" class="btn btn-dark"><span class="icon">🚔</span> 110 WÄHLEN</a></div>
+        <div class="card"><strong>Wehrbeauftragte(r) des Bundestages</strong><div style="font-size:12px; color:#ccc; margin-bottom:8px;">Eingaben bei Problemen.</div><a href="tel:08000000000" class="btn btn-dark"><span class="icon">✉️</span> EINGABE</a></div>
+        <div class="card"><strong>Ev./Kath. Militärseelsorge</strong><div style="font-size:12px; color:#ccc; margin-bottom:8px;">Gespräche & PTBS Hilfe.</div><a href="tel:08001110111" class="btn btn-dark"><span class="icon">⛪</span> SEELSORGE</a></div>
+        <button class="btn btn-dark" style="margin-top:20px;" onclick="switchView('view-menu')">ZURÜCK</button>
+    </div>
+
+    <div id="view-data" class="view">
+        <h2>DATENSICHERUNG</h2>
+        <div class="card">
+            <h3 style="margin-top:0;">KOMPLETT-BACKUP</h3>
+            <p style="font-size:12px; color:#ccc;">Sichert Profil, Schießbuch, Trainings, STAN, Radar, Fristen, RDL & Befehle.</p>
+            <button class="btn btn-olive" onclick="exportFullData()"><span class="icon">💾</span> ALLES EXPORTIEREN</button>
+            <div style="margin-top:25px; border-top:1px solid #3a4035; padding-top:15px;">
+                <h3 style="margin-top:0;">DATEN WIEDERHERSTELLEN</h3>
+                <input type="file" id="importFileInput" accept=".json" style="display:none" onchange="importFullData(event)">
+                <button class="btn btn-coyote" onclick="document.getElementById('importFileInput').click()"><span class="icon">📂</span> DATEI IMPORTIEREN</button>
+            </div>
+        </div>
+        <button class="btn btn-dark" onclick="switchView('view-menu')">ZURÜCK</button>
+    </div>
+
+    <div id="view-tccc" class="view">
+        <h2 style="color:#c0392b;">NOTFALL / TCCC</h2>
+        <div class="menu-grid" style="margin-bottom: 20px;">
+            <button class="btn btn-olive" onclick="toggleStrobe()"><span class="icon">🔦</span><span>SOS LICHT</span></button>
+            <button class="btn btn-coyote" onclick="toggleBeacon()"><span class="icon">🔊</span><span>SOS TON</span></button>
+        </div>
+        <div class="card" style="border-left-color: #c0392b;">
+            <h3 style="margin-top:0; color:#c0392b;">9-LINER (MEDEVAC)</h3>
+            <label>Z1: Location (GPS)</label>
+            <div style="display:flex; gap:10px;"><input type="text" id="tccc_loc" style="flex:2;"><button class="btn btn-dark" id="btnGps9" style="flex:1; margin:5px 0 0 0;" onclick="getGPSFor9Liner()">📍 GPS</button></div>
+            <div style="font-size:12px; color:#ccc; margin-top:15px; line-height: 1.5;"><strong>Z2:</strong> Rufzeichen/Freq | <strong>Z3:</strong> Prio A/B/C | <strong>Z4:</strong> Spezialausrüstung | <strong>Z5:</strong> Anz. Patienten | <strong>Z6:</strong> Sicherheit LZ | <strong>Z7:</strong> Markierung LZ | <strong>Z8:</strong> ABC? | <strong>Z9:</strong> Gelände</div>
+        </div>
+        <div class="step-red"><strong>🛑 1. EIGENSICHERUNG</strong>Waffe sichern! Übung unterbrechen!</div>
+        <h3 style="color:#c0392b;">cABCDE SCHEMA</h3>
+        <div class="step-red"><strong>c - CRITICAL BLEEDING</strong>Massive Blutung? Tourniquet (High & Tight)!</div>
+        <div class="step-red"><strong>A - AIRWAY (Atemwege)</strong>Mundraum prüfen. Überstrecken.</div>
+        <div class="step-red"><strong>B - BREATHING (Atmung)</strong>Brustkorb / Lunge prüfen. Chest Seal kleben.</div>
+        <div class="step-red"><strong>C - CIRCULATION (Kreislauf)</strong>Puls? Schocklage herstellen.</div>
+        <div class="step-red"><strong>D - DISABILITY (Neuro)</strong>Ansprechbar? Pupillenreaktion?</div>
+        <div class="step-red"><strong>E - EXPOSURE (Umwelt)</strong>Wärmeerhalt (Rettungsdecke) vs. Hitzschlag (Kühlen).</div>
+        <button class="btn btn-dark" style="margin-top:20px;" onclick="switchView('view-menu')">ZURÜCK</button>
+    </div>
+</div>
+
+<script src="js/scenarios.js"></script>
+<script src="js/main.js" defer></script>
+</body>
+</html>

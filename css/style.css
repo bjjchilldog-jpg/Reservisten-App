@@ -1,0 +1,112 @@
+/* --- FARBSCHEMA --- */
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #121411; color: #e0e0e0; margin: 0; padding: 10px; display: flex; justify-content: center; overflow-x: hidden; transition: background-color 0.3s; }
+        .app-container { width: 100%; max-width: 480px; background-color: #1c201a; border-radius: 8px; border: 1px solid #3a4035; padding: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.9); min-height: 95vh; position: relative; transition: all 0.3s;}
+        
+        h1, h2, h3 { text-align: center; color: #a1b082; margin-top: 0; text-transform: uppercase; letter-spacing: 1px; }
+        h1 { border-bottom: 2px solid #81613e; padding-bottom: 15px; margin-bottom: 20px; font-size: 24px; color: #c4d4a3; position: relative;}
+        h2 { font-size: 16px; margin-bottom: 12px; color: #81613e; }
+        h3 { font-size: 13px; margin-top: 20px; border-top: 1px solid #3a4035; padding-top: 15px; color: #c4d4a3;}
+        
+        .view { display: none; animation: fadeIn 0.2s; }
+        .view.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        label { display: block; margin-top: 12px; font-size: 11px; color: #889977; font-weight: bold; text-transform: uppercase; }
+        select, input, textarea { width: 100%; padding: 12px; margin-top: 5px; background-color: #121411; color: white; border: 1px solid #3a4035; border-radius: 4px; font-size: 14px; box-sizing: border-box; }
+        textarea { min-height: 80px; resize: vertical; }
+        select:focus, input:focus, textarea:focus { border-color: #81613e; outline: none; }
+        
+        .btn { display: flex; flex-direction: row; align-items: center; justify-content: center; width: 100%; padding: 18px 10px; margin: 8px 0; font-size: 13px; font-weight: 900; border: none; border-radius: 4px; cursor: pointer; text-transform: uppercase; gap: 10px; box-sizing: border-box; transition: 0.2s; }
+        .btn .icon { font-size: 1.4em; } 
+
+        .btn-coyote { background-color: #81613e; color: #fff; }
+        .btn-olive { background-color: #4b5320; color: #fff; }
+        .btn-red { background-color: #c0392b; color: #fff; }
+        .btn-dark { background-color: #2a2e26; color: #a1b082; border: 1px solid #3a4035; }
+        .btn-sm-del { background-color: #c0392b; color: white; border: none; padding: 6px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer; margin-top: 5px; }
+        .btn-sm-cal { background-color: #2980b9; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer; margin-top: 5px; }
+        .btn-sm-olive { background-color: #4b5320; color: white; border: none; padding: 8px 12px; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer; margin-top: 5px; width: 100%;}
+        .btn:active { transform: scale(0.98); filter: brightness(1.2); }
+
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .menu-grid .btn { padding: 15px 5px; font-size: 11px; flex-direction: column; gap: 6px; margin: 0; text-align: center; }
+        .menu-grid .menu-full { grid-column: span 2; flex-direction: row; font-size: 14px !important; padding: 20px 15px; }
+
+        .card { background: #22261f; padding: 15px; border-radius: 4px; margin-top: 10px; border-left: 4px solid #81613e; transition: 0.3s;}
+        
+        .igf-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #3a4035; font-size: 13px;}
+        .igf-row:last-child { border-bottom: none; }
+        .status-dot { width: 15px; height: 15px; border-radius: 50%; display: inline-block; }
+        .status-red { background-color: #c0392b; box-shadow: 0 0 8px #c0392b; }
+        .status-green { background-color: #27ae60; box-shadow: 0 0 8px #27ae60; }
+
+        .deadline-row { display: flex; justify-content: space-between; align-items: center; background: #121411; padding: 10px; margin-top: 8px; border-radius: 4px; border-left: 4px solid #a1b082; font-size: 13px; }
+        .admin-date-row { display: flex; align-items: center; gap: 8px; margin-top: 5px; }
+        .admin-date-row input { flex: 1; margin: 0; }
+        .admin-date-row .btn-sm-cal { margin: 0; padding: 12px; font-size: 14px; width: 45px; display: flex; justify-content: center; align-items: center; }
+
+        .gear-row { display: flex; align-items: center; background: #121411; padding: 12px; margin-top: 8px; border-radius: 4px; border-left: 4px solid #3a4035; cursor: pointer; }
+        .gear-row.checked { border-left-color: #4b5320; background: #1a2214; }
+        .gear-row span { flex-grow: 1; font-size: 14px; font-weight: bold; }
+        .gear-row.checked span { text-decoration: line-through; color: #666; }
+
+        .log-entry { background: #22261f; padding: 15px; border-radius: 4px; margin-top: 10px; font-size: 13px; border-left: 4px solid #4b5320; }
+        .log-date { color: #889977; font-size: 11px; margin-bottom: 5px; font-weight: bold; }
+        .log-img { width: 100%; margin-top: 10px; border-radius: 4px; border: 1px solid #3a4035; }
+
+        #radarCanvas { display: block; margin: 0 auto; background: #121411; border-radius: 50%; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+        .radar-slider-box { background: #22261f; padding: 15px; border-radius: 4px; margin-top: 15px; border: 1px solid #3a4035; display: none;}
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; margin: 10px 0; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%; background: #a1b082; cursor: pointer; }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 6px; cursor: pointer; background: #3a4035; border-radius: 3px; }
+        .slider-label { display: flex; justify-content: space-between; font-size: 13px; font-weight: bold; color: #fff; margin-top: 10px;}
+        
+        .dash-box { background: #22261f; padding: 15px; border-radius: 4px; text-align: center; border-bottom: 3px solid #4b5320; margin-top: 15px;}
+        .dash-val { font-size: 28px; font-weight: 900; color: #4b5320; margin: 5px 0; font-family: monospace;}
+        .dash-label { font-size: 10px; color: #889977; text-transform: uppercase; font-weight: bold; letter-spacing: 1px;}
+
+        .timer-display { font-size: 55px; text-align: center; margin: 20px 0; font-family: monospace; font-weight: bold; color: #a1b082; }
+        .step-red { background-color: #121411; border-left: 4px solid #c0392b; margin: 10px 0; padding: 12px; font-size: 13px; border-radius: 4px; transition: border-color 0.3s; }
+        
+        .ref-card { background: #121411; padding: 10px; border-left: 3px solid #a1b082; margin-top: 8px; font-size: 13px; }
+        .ref-card strong { color: #c4d4a3; }
+        
+        .rdl-bar-bg { width: 100%; height: 12px; background: #121411; border-radius: 6px; margin-top: 10px; border: 1px solid #3a4035; overflow: hidden; position: relative;}
+        .rdl-bar-fill { height: 100%; background: #27ae60; width: 0%; transition: width 0.5s ease-in-out; }
+        .rdl-marker { position: absolute; top: 0; width: 2px; height: 100%; background: #e74c3c; z-index: 10; }
+
+        #strobeScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; display: none; z-index: 9999; cursor: pointer; }
+
+        /* PREP PLANER STYLES */
+        .camp-alert { background: #400; border: 1px solid #c0392b; padding: 15px; border-radius: 4px; color: #ffcccc; font-size: 13px; margin-top: 15px; display: none; line-height: 1.4;}
+        .camp-stat-row { display: flex; justify-content: space-between; border-bottom: 1px solid #3a4035; padding: 8px 0; font-size: 14px;}
+        .camp-stat-row:last-child { border-bottom: none; }
+        .camp-stat-val { font-weight: bold; color: #a1b082; }
+        .camp-phase { background: #1a2214; padding: 10px; border-radius: 4px; margin-top: 10px; border-left: 3px solid #4b5320; font-size: 13px; color: #ccc;}
+        .plan-day { background: #22261f; border-left: 4px solid #a1b082; padding: 10px; margin-bottom: 8px; border-radius: 4px; }
+        .plan-day strong { color: #c4d4a3; display: block; margin-bottom: 3px; font-size: 14px; text-transform: uppercase; }
+        .plan-day span { font-size: 12px; color: #ccc; }
+
+        #splash-screen { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background-color: #121411; display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; z-index: 99999; 
+            animation: hideSplash 0.5s ease-out forwards;
+            animation-delay: 2.0s; pointer-events: none; padding: 20px; text-align: center;
+        }
+        @keyframes hideSplash { 100% { opacity: 0; visibility: hidden; } }
+        .eid-text { color: #a1b082; font-size: 18px; font-style: italic; line-height: 1.6; max-width: 400px; border-left: 4px solid #81613e; padding-left: 15px; text-align: left;}
+        
+        .header-profile { background: #2a2e26; padding: 10px 15px; border-radius: 4px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #3a4035; cursor: pointer; transition: 0.2s;}
+        .header-profile:active { background: #3a4035; }
+
+        /* --- REDLIGHT MODE CSS --- */
+        body.red-mode { background-color: #050000 !important; color: #ff3333 !important; }
+        body.red-mode .app-container { background-color: #110000 !important; border-color: #500 !important; box-shadow: 0 8px 30px rgba(255,0,0,0.2); }
+        body.red-mode .card, body.red-mode .dash-box, body.red-mode .ref-card, body.red-mode .log-entry, body.red-mode .gear-row, body.red-mode .deadline-row, body.red-mode .header-profile, body.red-mode .step-red, body.red-mode .plan-day, body.red-mode .camp-phase { background-color: #1a0000 !important; border-color: #800 !important; color: #ff3333 !important;}
+        body.red-mode h1, body.red-mode h2, body.red-mode h3, body.red-mode strong, body.red-mode span, body.red-mode div, body.red-mode label, body.red-mode p { color: #ff3333 !important; }
+        body.red-mode input, body.red-mode select, body.red-mode textarea { background-color: #0a0000 !important; color: #f00 !important; border-color: #600 !important; }
+        body.red-mode .btn, body.red-mode .btn-sm-del, body.red-mode .btn-sm-cal, body.red-mode .btn-sm-olive { background-color: #400 !important; color: #f00 !important; border: 1px solid #700 !important; }
+        body.red-mode .timer-display, body.red-mode #radarOverallScore, body.red-mode #paceDisplay { color: #ff0000 !important; text-shadow: 0 0 10px #f00; }
+        body.red-mode .rdl-bar-fill { background-color: #f00 !important; }
+        .btn-redlight { position: absolute; top: 20px; right: 20px; background: #300; border: 1px solid #f00; color: #f00; padding: 5px 10px; font-size: 10px; border-radius: 4px; font-weight: bold; cursor: pointer; z-index: 100;}

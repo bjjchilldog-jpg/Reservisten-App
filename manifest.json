@@ -1,0 +1,21 @@
+{
+  "name": "RK TacBoard OS",
+  "short_name": "TacBoard",
+  "description": "Digitale Taschenkarte und Übungsszenarien für Reservisten",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#121411",
+  "theme_color": "#1c201a",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
