@@ -1,10 +1,11 @@
-const CACHE_NAME = 'tacboard-cache-v1';
+const CACHE_NAME = 'tacboard-cache-v2';
 const urlsToCache = [
   './',
   './index.html',
   './css/style.css',
   './js/main.js',
   './js/scenarios.js',
+  './logo.png',
   './manifest.json'
 ];
 
